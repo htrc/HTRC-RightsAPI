@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	version="3.0">
+  <display-name>rights-api</display-name>
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+    <welcome-file>index.htm</welcome-file>
+    <welcome-file>index.jsp</welcome-file>
+    <welcome-file>default.html</welcome-file>
+    <welcome-file>default.htm</welcome-file>
+    <welcome-file>default.jsp</welcome-file>
+  </welcome-file-list>
+  
+  <servlet>
+    <servlet-name>RightsAPI</servlet-name>
+    <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+
+    <init-param>
+      <param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
+      <param-value>true</param-value>
+    </init-param>
+
+    <init-param>
+      <param-name>javax.ws.rs.Application</param-name>
+      <param-value>htrc.indiana.RightsAPIApplication</param-value>
+    </init-param>
+    
+    <init-param>
+      <param-name>level12.vols.filepath</param-name>
+      <param-value>/home/drhtrc/rights-api/vol-ids-level12.txt</param-value>
+    </init-param>
+ 
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>RightsAPI</servlet-name>
+    <url-pattern>/*</url-pattern>
+  </servlet-mapping>
+  
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>reload rights data</web-resource-name>
+      <url-pattern>/reload-rights</url-pattern>
+      <http-method>PUT</http-method>
+    </web-resource-collection>
+    
+    <auth-constraint>
+      <role-name>rightsAdmin</role-name>
+    </auth-constraint>
+
+    <user-data-constraint>
+      <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+    </user-data-constraint>
+  </security-constraint>
+
+  <login-config>
+    <auth-method>BASIC</auth-method>
+    <realm-name>UserDatabase</realm-name>
+  </login-config>
+
+  <security-role>
+    <role-name>rightsAdmin</role-name>
+  </security-role>
+</web-app>
+
