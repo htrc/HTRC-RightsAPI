@@ -1,11 +1,14 @@
-package htrc.indiana;
+package edu.indiana.d2i.htrc.rights;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ParamValues {
-	public static final String LEVEL12_VOLS_FILEPATH_PARAM = "level12.vols.filepath";
+	public static final String REDIS_HOST_PARAM = "redis.host";
+	public static final String REDIS_NUM_KEYS_PER_MGET_PARAM = "redis.num.keys.per.mget";
+	public static final String REDIS_NUM_MGETS_PER_PIPELINE_PARAM = "redis.num.mgets.per.pipeline";
+	public static final String REDIS_VOLUME_ID_KEY_SUFFIX_PARAM = "redis.volume.id.key.suffix";
 
 	Map<String, String> paramValues = null;
 	
@@ -19,6 +22,10 @@ public class ParamValues {
 	
 	public String getParamValue(String name) {
 		return paramValues.get(name);
+	}
+
+	public String getParamValue(String name, String defaultValue) {
+		return paramValues.getOrDefault(name, defaultValue);
 	}
 
 	@Override

@@ -24,12 +24,27 @@
 
     <init-param>
       <param-name>javax.ws.rs.Application</param-name>
-      <param-value>htrc.indiana.RightsAPIApplication</param-value>
+      <param-value>edu.indiana.d2i.htrc.rights.RightsAPIApplication</param-value>
     </init-param>
-    
+
     <init-param>
-      <param-name>level12.vols.filepath</param-name>
-      <param-value>/home/drhtrc/rights-api/vol-ids-level12.txt</param-value>
+      <param-name>redis.host</param-name>
+      <param-value>localhost</param-value>
+    </init-param>
+
+    <init-param>
+      <param-name>redis.num.keys.per.mget</param-name>
+      <param-value>1000</param-value>
+    </init-param>
+
+    <init-param>
+      <param-name>redis.num.mgets.per.pipeline</param-name>
+      <param-value>1000</param-value>
+    </init-param>
+
+    <init-param>
+      <param-name>redis.volume.id.key.suffix</param-name>
+      <param-value>:level</param-value>
     </init-param>
  
     <load-on-startup>1</load-on-startup>
