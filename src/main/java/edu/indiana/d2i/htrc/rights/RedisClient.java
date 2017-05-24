@@ -3,6 +3,7 @@ package edu.indiana.d2i.htrc.rights;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,24 +19,27 @@ public class RedisClient {
 
 	private static final String DEFAULT_NUM_KEYS_PER_MGET = "1000";
 	private static final String DEFAULT_NUM_MGETS_PER_PIPELINE = "1000";
+	private static final String DEFAULT_NUM_HMGETS_PER_PIPELINE = "1000";
 	
 	private static int numKeysPerMget = Integer.parseInt(DEFAULT_NUM_KEYS_PER_MGET);
 	private static int numMgetsPerPipeline = Integer.parseInt(DEFAULT_NUM_MGETS_PER_PIPELINE);
+	private static int numHmgetsPerPipeline = Integer.parseInt(DEFAULT_NUM_HMGETS_PER_PIPELINE);
 
 	private JedisPool jedisPool;
 	
-	// initialize configuration settings for redis pipelining, using the parameters in Hub; this method should be called during initialization
-	public static void initPipelineSettings() {
+	// initializes parameters using values in Hub.initParams; this method should be called at startup
+	public static void initParams() {
 		numKeysPerMget = Integer.parseInt(Hub.getInitParams().getParamValue(ParamValues.REDIS_NUM_KEYS_PER_MGET_PARAM, DEFAULT_NUM_KEYS_PER_MGET));
 		numMgetsPerPipeline = Integer.parseInt(Hub.getInitParams().getParamValue(ParamValues.REDIS_NUM_MGETS_PER_PIPELINE_PARAM, DEFAULT_NUM_MGETS_PER_PIPELINE));		
+		numHmgetsPerPipeline = Integer.parseInt(Hub.getInitParams().getParamValue(ParamValues.REDIS_NUM_HMGETS_PER_PIPELINE_PARAM, DEFAULT_NUM_HMGETS_PER_PIPELINE));		
 	}
 	
 	public RedisClient(String redisHost) {
 		this.jedisPool = new JedisPool(new JedisPoolConfig(), redisHost);
 	}
 	
-	public List<String> getKeyValuesPipelined(List<String> keys) {
-		if (keys.size() == 0) {
+	public List<String> getKeyValues(List<String> keys) {
+		if ((keys == null) || (keys.size() == 0)) {
 			return Collections.emptyList();
 		}
 		
@@ -51,9 +55,6 @@ public class RedisClient {
         		batchRes = new ArrayList<Response<List<String>>>(numMgetsPerPipeline);
         		while ((i < size) && (numMgets < numMgetsPerPipeline)) {
         			int endIndex = Integer.min(i + numKeysPerMget, size);
-        			// System.out.println("iteration: i = " + i + ", endIndex = " + endIndex);
-        			// printArrayElems(keys.subList(i, endIndex).toArray(new String[numKeysPerMget]));
-        			//System.out.println("  list = " + keys.subList(i, endIndex).stream().collect(Collectors.joining(",", "[", "]")));
         			batchRes.add(pipeline.mget(keys.subList(i, endIndex).toArray(new String[endIndex - i])));
         			i += numKeysPerMget;
         			numMgets++;
@@ -68,6 +69,37 @@ public class RedisClient {
         } catch (Exception e) {
         	logger.error("Exception while trying to access redis: {}", e.getMessage(), e); 
         	return Collections.emptyList();
+        }
+	}
+	
+	// returns the values of the specified fields of the hashes at the given keys in redis; the requests to redis are pipelined
+	// the result is a list where each element is a list of the values of the hash fields for one key; so, if n field names are specified then,
+	// each element in the result list is a list of size n; returns an empty Optional in case of error or exception
+	public Optional<List<List<String>>> getHashFieldValues(List<String> keys, String... fieldNames) {
+		if ((keys == null) || (keys.size() == 0)) {
+			return Optional.of(Collections.emptyList());
+		}
+		
+        try (Jedis jedis = this.jedisPool.getResource()) {
+        	Pipeline pipeline = jedis.pipelined();
+        	int size = keys.size();
+        	int i = 0;
+        	List<List<String>> res = new ArrayList<List<String>>();
+        	while (i < size) {
+        		int numHmgets = 0;
+        		List<Response<List<String>>> batchRes = new ArrayList<Response<List<String>>>(numHmgetsPerPipeline);
+        		while ((i < size) && (numHmgets < numHmgetsPerPipeline)) {
+        			batchRes.add(pipeline.hmget(keys.get(i), fieldNames));
+        			i++;
+        			numHmgets++;
+        		}
+        		pipeline.sync();
+        		batchRes.forEach(response -> res.add(response.get()));
+        	}
+        	return Optional.of(res);
+        } catch (Exception e) {
+        	logger.error("getHashFieldValues: exception while trying to access redis, {}", e.getMessage(), e); 
+        	return Optional.empty();
         }
 	}
 }

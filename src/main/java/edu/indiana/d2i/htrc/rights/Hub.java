@@ -22,7 +22,7 @@ public class Hub {
 		logger.debug("Servlet params: {}", initParams);
 		
 		LevelsProcessor.initParams();
-		RedisClient.initPipelineSettings();
+		RedisClient.initParams();
 		
 		redisClient = new RedisClient(initParams.getParamValue(ParamValues.REDIS_HOST_PARAM));
 	}

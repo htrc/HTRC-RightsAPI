@@ -4,52 +4,46 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class FilterResultJson {
-	List<String> filteredVolumeIdsList;
-	List<String> invalidVolumeIdsList;
+	List<String> volIdsAtFilterLevels; // volume ids that are at the specified filter levels
+	List<String> volIdsUnavailableAtHtrc; // volume ids that are not available in the HTRC volume data store (Cassandra)
 	
 	public FilterResultJson(List<String> filteredVolumeIdsList, List<String> invalidVolumeIdsList) {
 		super();
-		this.filteredVolumeIdsList = filteredVolumeIdsList;
-		this.invalidVolumeIdsList = invalidVolumeIdsList;
+		this.volIdsAtFilterLevels = filteredVolumeIdsList;
+		this.volIdsUnavailableAtHtrc = invalidVolumeIdsList;
 	}
 
-	public List<String> getFilteredVolumeIdsList() {
-		return filteredVolumeIdsList;
+	public List<String> getVolIdsAtFilterLevels() {
+		return volIdsAtFilterLevels;
 	}
 
-	public void setFilteredVolumeIdsList(List<String> filteredVolumeIdsList) {
-		this.filteredVolumeIdsList = filteredVolumeIdsList;
+	public void setVolIdsAtFilterLevels(List<String> volIdsAtFilterLevels) {
+		this.volIdsAtFilterLevels = volIdsAtFilterLevels;
 	}
 
-	public List<String> getInvalidVolumeIdsList() {
-		return invalidVolumeIdsList;
+	public List<String> getVolIdsUnavailableAtHtrc() {
+		return volIdsUnavailableAtHtrc;
 	}
 
-	public void setInvalidVolumeIdsList(List<String> invalidVolumeIdsList) {
-		this.invalidVolumeIdsList = invalidVolumeIdsList;
+	public void setVolIdsUnavailableAtHtrc(List<String> volIdsUnavailableAtHtrc) {
+		this.volIdsUnavailableAtHtrc = volIdsUnavailableAtHtrc;
 	}
 
-	public int filteredVolumeIdsListSize() {
-		return this.filteredVolumeIdsList.size();
+	public int volIdsAtFilterLevelsSize() {
+		return this.volIdsAtFilterLevels.size();
 	}
 		
-	public int invalidVolumeIdsListSize() {
-		return this.invalidVolumeIdsList.size();
+	public int volIdsUnavailableAtHtrcSize() {
+		return this.volIdsUnavailableAtHtrc.size();
 	}
 	
 	@Override
 	public String toString() {
-		return String.format("{ \"filteredVolumeIdsList\":%s, \"invalidVolumeIdsList\":%s }",
-				listToString(this.filteredVolumeIdsList), listToString(this.invalidVolumeIdsList));
+		return String.format("{ \"volIdsAtFilterLevels\":%s, \"volIdsUnavailableAtHtrc\":%s }",
+				listToString(this.volIdsAtFilterLevels), listToString(this.volIdsUnavailableAtHtrc));
 	}
 	
 	private String listToString(List<String> strList) {
 		return strList.stream().collect(Collectors.joining(",", "[", "]"));
 	}
-
-//	public static FilterResultJson empty() {
-//		FilterResultJson res = new FilterResultJson();
-//		res.setVolumeIdsList(Collections.emptyList());
-//		return res;
-//	}
 }

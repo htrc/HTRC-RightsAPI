@@ -4,6 +4,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
@@ -32,19 +33,19 @@ public class RequestResource {
 		
 		if (level == null) {
 			String errorMsg = "<html><body>Parameter \"level\" should have a non-null value.</body></html>";
-			throw new WebApplicationException(Response.status(400).entity(errorMsg).build());			
-//		} else if (level.equals("0")) {
-//			// return an empty list, since no volumes are at level 0
-//			return VolumeIdsJson.empty();
+			throw new WebApplicationException(Response.status(400).entity(errorMsg).build());
 		} else {
-			FilterResultJson res = (new LevelsProcessor(input.getVolumeIdsList())).filterVolsAtLevel(filterLevels);
-//			VolumeIdsJson res = new VolumeIdsJson();
-//			res.setVolumeIdsList(resVols);
-		
-			logger.debug("Completed processing for filter request, level = {}, input list size = {}, numFilteredVols = {}, numInvalidVols = {}", 
-					level, input.size(), res.filteredVolumeIdsListSize(), res.invalidVolumeIdsListSize());
+			long start = System.currentTimeMillis();
+			Optional<FilterResultJson> res = (new LevelsProcessor(input.getVolumeIdsList())).filterVolsByLevel(filterLevels);
+			long end  = System.currentTimeMillis();
+			
+			logger.debug("Completed processing for filter request, level = {}, input list size = {}, numVolsAtFilterLevels = {}, numVolsUnavailableAtHtrc = {}, time = {} seconds", 
+					level, input.size(), res.map(fres -> fres.volIdsAtFilterLevelsSize()).orElse(-1), 
+					res.map(fres -> fres.volIdsUnavailableAtHtrcSize()).orElse(-1),
+					(end - start)/1000.0);
 
-			return res;
+			String errorMsg = "<html><body>Unable to complete request at this time.</body></html>";
+			return res.orElseThrow(() -> new WebApplicationException(Response.status(500).entity(errorMsg).build()));
 		}
 	}
 }
