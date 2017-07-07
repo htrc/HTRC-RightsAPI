@@ -102,4 +102,35 @@ public class RedisClient {
         	return Optional.empty();
         }
 	}
+	
+	// returns the values of the specified field of the hashes at the given keys in redis; the requests to redis are pipelined; notice that this
+	// method is optimized for the case when only one hash field needs to be retrieved; for more than one hash fields, use getHashFieldValues
+	// returns an empty Optional in case of error or exception
+	public Optional<List<String>> getSingleHashFieldValue(List<String> keys, String fieldName) {
+		if ((keys == null) || (keys.size() == 0)) {
+			return Optional.of(Collections.emptyList());
+		}
+		
+        try (Jedis jedis = this.jedisPool.getResource()) {
+        	Pipeline pipeline = jedis.pipelined();
+        	int size = keys.size();
+        	int i = 0;
+        	List<String> res = new ArrayList<String>();
+        	while (i < size) {
+        		int numHgets = 0;
+        		List<Response<String>> batchRes = new ArrayList<Response<String>>(numHmgetsPerPipeline);
+        		while ((i < size) && (numHgets < numHmgetsPerPipeline)) {
+        			batchRes.add(pipeline.hget(keys.get(i), fieldName));
+        			i++;
+        			numHgets++;
+        		}
+        		pipeline.sync();
+        		batchRes.forEach(response -> res.add(response.get()));
+        	}
+        	return Optional.of(res);
+        } catch (Exception e) {
+        	logger.error("getSingleHashFieldValue: exception while trying to access redis, {}", e.getMessage(), e); 
+        	return Optional.empty();
+        }
+	}
 }

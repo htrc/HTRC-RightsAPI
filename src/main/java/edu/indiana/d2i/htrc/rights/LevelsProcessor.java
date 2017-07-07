@@ -1,6 +1,7 @@
 package edu.indiana.d2i.htrc.rights;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -66,6 +67,13 @@ public class LevelsProcessor {
 		return optVolRightsInfo.flatMap(volRightsInfo -> filterVolsByLevel(volRightsInfo, (String volLevel) -> filterLevels.stream()
 				.anyMatch(filterLevel -> (filterLevel == null) ? (filterLevel == volLevel) : ((volLevel != null) && volLevel.startsWith(filterLevel)))));
 	}
+	
+	// return the volumes in this.volIdsList that have availability status "false"
+	public Optional<FilterResultJson> filterVolsByAvailability() {
+		List<String> volIdsKeys = this.volIdsList.stream().map(this::volumeIdToKey).collect(Collectors.toList());
+		Optional<List<String>> optVolAvailInfo = redisClient.getSingleHashFieldValue(volIdsKeys, availStatusHashFieldName);
+		return optVolAvailInfo.flatMap(volAvailInfo -> filterVolsByAvailability(volAvailInfo));
+	}
 	   
     // given a list of the rights information (access level, availability status) for the volumes in this.volIdsList, and a predicate to test an
     // access level, this method returns a FilterResultJson object that contains
@@ -98,6 +106,26 @@ public class LevelsProcessor {
     	}
 
     	return Optional.of(new FilterResultJson(filteredVols, unavailableAtHtrc));
+    }
+    
+    // given a list of the availability status for the volumes in this.volIdsList, this method returns a FilterResultJson object that contains
+    // the list of volume ids that are not available in HTRC Cassandra
+    // Returns an empty Optional if there is an error
+    private Optional<FilterResultJson> filterVolsByAvailability(List<String> availInfo) {
+    	Iterator<String> volIdsItr = this.volIdsList.iterator();
+    	Iterator<String> availInfoItr = availInfo.iterator();
+
+    	List<String> unavailableAtHtrc = new ArrayList<String>();
+
+    	while (volIdsItr.hasNext() && availInfoItr.hasNext()) {
+    		String volId = volIdsItr.next();
+    		String availStatus = availInfoItr.next();
+    		if ((availStatus == null) || (availStatus.equals("false"))) {
+    			unavailableAtHtrc.add(volId);
+    		}
+    	}
+
+    	return Optional.of(new FilterResultJson(Collections.emptyList(), unavailableAtHtrc));
     }
     
 	private String volumeIdToKey(String volId) {

@@ -30,10 +30,19 @@ public class RequestResource {
 		List<String> filterLevels = LevelsProcessor.parseLevels(level).collect(Collectors.toList());
 		logger.debug("Received POST filter, level = \"{}\", parsed levels = {}, input list size = {}", level, 
 				filterLevels.stream().collect(Collectors.joining(",", "[", "]")), input.size());
+		String errorMsg = "<html><body>Unable to complete request at this time.</body></html>";
 		
 		if (level == null) {
-			String errorMsg = "<html><body>Parameter \"level\" should have a non-null value.</body></html>";
-			throw new WebApplicationException(Response.status(400).entity(errorMsg).build());
+			long start = System.currentTimeMillis();
+			Optional<FilterResultJson> res = (new LevelsProcessor(input.getVolumeIdsList())).filterVolsByAvailability();
+			long end  = System.currentTimeMillis();
+			
+			logger.debug("Completed processing for filter by availability request, level = null, input list size = {}, numVolsAtFilterLevels = {}, numVolsUnavailableAtHtrc = {}, time = {} seconds", 
+					input.size(), res.map(fres -> fres.volIdsAtFilterLevelsSize()).orElse(-1), 
+					res.map(fres -> fres.volIdsUnavailableAtHtrcSize()).orElse(-1),
+					(end - start)/1000.0);
+
+			return res.orElseThrow(() -> new WebApplicationException(Response.status(500).entity(errorMsg).build()));
 		} else {
 			long start = System.currentTimeMillis();
 			Optional<FilterResultJson> res = (new LevelsProcessor(input.getVolumeIdsList())).filterVolsByLevel(filterLevels);
@@ -44,7 +53,6 @@ public class RequestResource {
 					res.map(fres -> fres.volIdsUnavailableAtHtrcSize()).orElse(-1),
 					(end - start)/1000.0);
 
-			String errorMsg = "<html><body>Unable to complete request at this time.</body></html>";
 			return res.orElseThrow(() -> new WebApplicationException(Response.status(500).entity(errorMsg).build()));
 		}
 	}
