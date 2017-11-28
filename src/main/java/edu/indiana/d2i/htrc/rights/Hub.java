@@ -1,6 +1,7 @@
-package htrc.indiana;
+package edu.indiana.d2i.htrc.rights;
 
 import java.util.Enumeration;
+
 import javax.servlet.ServletConfig;
 
 import org.slf4j.Logger;
@@ -10,7 +11,7 @@ public class Hub {
 	private static final Logger logger = LoggerFactory.getLogger(Hub.class);
 
 	private static ParamValues initParams = null;
-	private static VolumesSet level12Vols = null;
+	private static RedisClient redisClient = null;
 	
 	public static void init(ServletConfig servletConfig) {
 		// LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
@@ -19,16 +20,19 @@ public class Hub {
 		
 		initializeParams(servletConfig);
 		logger.debug("Servlet params: {}", initParams);
-
-		initLevel12Vols();
+		
+		LevelsProcessor.initParams();
+		RedisClient.initParams();
+		
+		redisClient = new RedisClient(initParams.getParamValue(ParamValues.REDIS_HOST_PARAM));
 	}
 	
 	public static ParamValues getInitParams() {
 		return initParams;
 	}
 	
-	public static VolumesSet getLevel12Vols() {
-		return level12Vols;
+	public static RedisClient getRedisClient() {
+		return redisClient;
 	}
      
 	// initialize parameters to the servlet
@@ -40,12 +44,5 @@ public class Hub {
 			String paramName = paramNames.nextElement();
 			initParams.setParamValue(paramName, servletConfig.getInitParameter(paramName));
 		}
-	}
-	
-	// read the volume ids at data protection levels 1 and 2, and initialize level12Vols
-	private static void initLevel12Vols() {
-		logger.debug("Initializing set of volumes at levels 1, 2 ...");
-		String level12VolsFilePath = initParams.getParamValue(ParamValues.LEVEL12_VOLS_FILEPATH_PARAM);
-		level12Vols = new VolumesSet(level12VolsFilePath, "level12Vols");
 	}
 }

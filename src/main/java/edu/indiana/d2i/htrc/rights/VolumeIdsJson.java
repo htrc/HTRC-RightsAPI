@@ -1,4 +1,4 @@
-package htrc.indiana;
+package edu.indiana.d2i.htrc.rights;
 
 import java.util.Collections;
 import java.util.List;

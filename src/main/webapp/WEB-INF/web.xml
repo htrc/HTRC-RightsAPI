@@ -24,14 +24,49 @@
 
     <init-param>
       <param-name>javax.ws.rs.Application</param-name>
-      <param-value>htrc.indiana.RightsAPIApplication</param-value>
+      <param-value>edu.indiana.d2i.htrc.rights.RightsAPIApplication</param-value>
     </init-param>
-    
+
     <init-param>
-      <param-name>level12.vols.filepath</param-name>
-      <param-value>/home/drhtrc/rights-api/vol-ids-level12.txt</param-value>
+      <param-name>redis.host</param-name>
+      <param-value>localhost</param-value>
     </init-param>
- 
+
+    <init-param>
+      <param-name>redis.num.keys.per.mget</param-name>
+      <param-value>1000</param-value>
+    </init-param>
+
+    <init-param>
+      <param-name>redis.num.mgets.per.pipeline</param-name>
+      <param-value>1000</param-value>
+    </init-param>
+
+    <init-param>
+      <param-name>redis.num.hmgets.per.pipeline</param-name>
+      <param-value>2000</param-value>
+    </init-param>
+
+    <init-param>
+      <param-name>redis.volume.id.key.prefix</param-name>
+      <param-value>volume:</param-value>
+    </init-param>
+
+    <init-param>
+      <param-name>redis.volume.id.key.suffix</param-name>
+      <param-value>:info</param-value>
+    </init-param>
+
+    <init-param>
+      <param-name>redis.access.level.hash.field</param-name>
+      <param-value>access-level</param-value>
+    </init-param>
+
+    <init-param>
+      <param-name>redis.avail.status.hash.field</param-name>
+      <param-value>avail-status</param-value>
+    </init-param>
+
     <load-on-startup>1</load-on-startup>
   </servlet>
 
@@ -39,30 +74,6 @@
     <servlet-name>RightsAPI</servlet-name>
     <url-pattern>/*</url-pattern>
   </servlet-mapping>
-  
-  <security-constraint>
-    <web-resource-collection>
-      <web-resource-name>reload rights data</web-resource-name>
-      <url-pattern>/reload-rights</url-pattern>
-      <http-method>PUT</http-method>
-    </web-resource-collection>
-    
-    <auth-constraint>
-      <role-name>rightsAdmin</role-name>
-    </auth-constraint>
 
-    <user-data-constraint>
-      <transport-guarantee>CONFIDENTIAL</transport-guarantee>
-    </user-data-constraint>
-  </security-constraint>
-
-  <login-config>
-    <auth-method>BASIC</auth-method>
-    <realm-name>UserDatabase</realm-name>
-  </login-config>
-
-  <security-role>
-    <role-name>rightsAdmin</role-name>
-  </security-role>
 </web-app>
 

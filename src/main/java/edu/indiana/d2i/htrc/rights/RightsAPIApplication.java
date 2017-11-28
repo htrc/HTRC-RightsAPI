@@ -1,4 +1,4 @@
-package htrc.indiana;
+package edu.indiana.d2i.htrc.rights;
 
 import java.util.HashSet;
 import java.util.Set;
