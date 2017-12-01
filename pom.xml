@@ -1,5 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+  <groupId>edu.indiana.d2i.htrc.rights</groupId>
+  <artifactId>rights-api</artifactId>
   <version>2.0.1-SNAPSHOT</version>
   <packaging>war</packaging>
   <build>
@@ -73,6 +75,18 @@
 	  <version>1.1.7</version>
 	</dependency>
   </dependencies>
-  <groupId>edu.indiana.d2i.htrc.rights</groupId>
-  <artifactId>rights-api</artifactId>
+
+  <distributionManagement>
+    <repository>
+      <id>htrc.nexus.releases</id>
+      <name>HTRC Release Repository</name>
+      <url>https://nexus.htrc.illinois.edu/content/repositories/releases/</url>
+    </repository>
+    
+    <snapshotRepository>
+      <id>htrc.nexus.snapshots</id>
+      <name>HTRC Snapshot Repository</name>
+      <url>https://nexus.htrc.illinois.edu/content/repositories/snapshots/</url>
+    </snapshotRepository>
+  </distributionManagement>
 </project>
