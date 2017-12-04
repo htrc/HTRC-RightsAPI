@@ -29,7 +29,8 @@
 
     <init-param>
       <param-name>redis.host</param-name>
-      <param-value>localhost</param-value>
+      <!-- <param-value>localhost</param-value> -->
+      <param-value>htc3.carbonate.uits.iu.edu</param-value>
     </init-param>
 
     <init-param>
