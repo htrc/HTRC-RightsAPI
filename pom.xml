@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>edu.indiana.d2i.htrc.rights</groupId>
   <artifactId>rights-api</artifactId>
-  <version>2.0.1-SNAPSHOT</version>
+  <version>2.0.2-SNAPSHOT</version>
   <packaging>war</packaging>
   <build>
     <plugins>
@@ -67,12 +67,12 @@
 	<dependency>
 	  <groupId>ch.qos.logback</groupId>
 	  <artifactId>logback-classic</artifactId>
-	  <version>1.1.7</version>
+	  <version>1.2.3</version>
 	</dependency>
 	<dependency>
 	  <groupId>ch.qos.logback</groupId>
 	  <artifactId>logback-core</artifactId>
-	  <version>1.1.7</version>
+	  <version>1.2.3</version>
 	</dependency>
   </dependencies>
 
@@ -80,13 +80,13 @@
     <repository>
       <id>htrc.nexus.releases</id>
       <name>HTRC Release Repository</name>
-      <url>https://nexus.htrc.illinois.edu/content/repositories/releases/</url>
+      <url>https://nexus.htrc.illinois.edu/repository/releases/</url>
     </repository>
     
     <snapshotRepository>
       <id>htrc.nexus.snapshots</id>
       <name>HTRC Snapshot Repository</name>
-      <url>https://nexus.htrc.illinois.edu/content/repositories/snapshots/</url>
+      <url>https://nexus.htrc.illinois.edu/repository/snapshots/</url>
     </snapshotRepository>
   </distributionManagement>
 </project>
