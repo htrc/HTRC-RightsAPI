@@ -6,6 +6,9 @@ import java.util.stream.Collectors;
 
 public class ParamValues {
 	public static final String REDIS_HOST_PARAM = "redis.host";
+	public static final String REDIS_PORT_PARAM = "redis.port";
+    public static final String REDIS_PASSWORD_PARAM = "redis.password";
+	public static final String REDIS_TIMEOUT_PARAM = "redis.timeout";
 	public static final String REDIS_NUM_KEYS_PER_MGET_PARAM = "redis.num.keys.per.mget";
 	public static final String REDIS_NUM_MGETS_PER_PIPELINE_PARAM = "redis.num.mgets.per.pipeline";
 	public static final String REDIS_NUM_HMGETS_PER_PIPELINE_PARAM = "redis.num.hmgets.per.pipeline";

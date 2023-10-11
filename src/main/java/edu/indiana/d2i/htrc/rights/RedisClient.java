@@ -34,8 +34,8 @@ public class RedisClient {
 		numHmgetsPerPipeline = Integer.parseInt(Hub.getInitParams().getParamValue(ParamValues.REDIS_NUM_HMGETS_PER_PIPELINE_PARAM, DEFAULT_NUM_HMGETS_PER_PIPELINE));		
 	}
 	
-	public RedisClient(String redisHost) {
-		this.jedisPool = new JedisPool(new JedisPoolConfig(), redisHost);
+	public RedisClient(String redisHost, int redisPort, int redisTimeout, String redisPassword) {
+		this.jedisPool = new JedisPool(new JedisPoolConfig(), redisHost,redisPort, redisTimeout,redisPassword);
 	}
 	
 	public List<String> getKeyValues(List<String> keys) {
