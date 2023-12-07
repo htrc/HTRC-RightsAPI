@@ -24,7 +24,7 @@ public class Hub {
 		LevelsProcessor.initParams();
 		RedisClient.initParams();
 		
-		redisClient = new RedisClient(initParams.getParamValue(ParamValues.REDIS_HOST_PARAM));
+		redisClient = new RedisClient(initParams.getParamValue(ParamValues.REDIS_HOST_PARAM), Integer.parseInt(initParams.getParamValue(ParamValues.REDIS_PORT_PARAM)), Integer.parseInt(initParams.getParamValue(ParamValues.REDIS_TIMEOUT_PARAM)), initParams.getParamValue(ParamValues.REDIS_PASSWORD_PARAM));
 	}
 	
 	public static ParamValues getInitParams() {

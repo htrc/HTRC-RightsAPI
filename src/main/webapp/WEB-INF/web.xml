@@ -29,9 +29,22 @@
 
     <init-param>
       <param-name>redis.host</param-name>
-      <!-- <param-value>localhost</param-value> -->
-      <!-- <param-value>htc4.carbonate.uits.iu.edu</param-value> -->
-      <param-value>htc5.carbonate.uits.iu.edu</param-value>
+      <param-value>htc6.carbonate.uits.iu.edu</param-value>
+    </init-param>
+
+    <init-param>
+      <param-name>redis.port</param-name>
+      <param-value>6379</param-value>
+    </init-param>
+
+    <init-param>
+      <param-name>redis.timeout</param-name>
+      <param-value>2000</param-value>
+    </init-param>
+
+    <init-param>
+      <param-name>redis.password</param-name>
+      <param-value>PASSWORD</param-value>
     </init-param>
 
     <init-param>
